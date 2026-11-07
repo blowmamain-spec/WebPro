@@ -1,1 +1,267 @@
 @import "tailwindcss";
+
+/* Style global: berlaku untuk semua halaman.
+   Class bawaan proyek ini (kartu, tombol, dst.) ada di @layer components,
+   jadi kalau di satu elemen kamu tambah class Tailwind (misal "mt-4"), class Tailwind itu yang menang. */
+
+:root {
+  --warna-utama: #2f5bd3;
+  --warna-utama-gelap: #2346a8;
+  --warna-teks: #1f2937;
+  --warna-redup: #6b7280;
+  --warna-garis: #e5e7eb;
+  --warna-latar: #f5f6fa;
+  --warna-kartu: #ffffff;
+  --warna-sidebar: #111827;
+  --radius: 8px;
+}
+
+@layer base {
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--warna-teks);
+    background: var(--warna-latar);
+    line-height: 1.5;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  a {
+    color: var(--warna-utama);
+  }
+}
+
+@layer components {
+  /* ---------- Layout dengan sidebar ---------- */
+
+  .layout {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem 0.75rem;
+    background: var(--warna-sidebar);
+    color: #e5e7eb;
+  }
+
+  .layout-admin .sidebar {
+    background: #3b1f2b;
+  }
+
+  .sidebar-judul {
+    margin: 0 0.75rem 1.25rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .sidebar-grup {
+    margin-bottom: 1rem;
+  }
+
+  .sidebar-label {
+    margin: 0 0.75rem 0.25rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+  }
+
+  .sidebar-link {
+    display: block;
+    padding: 0.45rem 0.75rem;
+    border-radius: var(--radius);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Class "aktif" dipasang SidebarMenu ke link halaman yang sedang dibuka */
+  .sidebar-link.aktif {
+    background: var(--warna-utama);
+    color: #fff;
+  }
+
+  .sidebar-bawah {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .konten {
+    flex: 1;
+    min-width: 0;
+    padding: 2rem;
+  }
+
+  /* ---------- Komponen umum ---------- */
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .page-header p {
+    margin-top: 0.25rem;
+    color: var(--warna-redup);
+  }
+
+  .page-header-aksi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .kartu {
+    background: var(--warna-kartu);
+    border: 1px solid var(--warna-garis);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+
+  .kartu + .kartu {
+    margin-top: 1rem;
+  }
+
+  /* Tailwind menghapus bullet list bawaan browser; di dalam kartu kita pakai lagi */
+  .kartu ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+
+  ul.kartu {
+    list-style: disc;
+    padding-left: 2.5rem;
+  }
+
+  .tombol {
+    display: inline-block;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--warna-utama);
+    border-radius: var(--radius);
+    background: var(--warna-utama);
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .tombol:hover {
+    background: var(--warna-utama-gelap);
+  }
+
+  .tombol:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .tombol-garis {
+    background: transparent;
+    color: var(--warna-utama);
+  }
+
+  .tombol-garis:hover {
+    background: #eef2fd;
+  }
+
+  .teks-redup {
+    color: var(--warna-redup);
+  }
+
+  .pesan-error {
+    color: #b91c1c;
+  }
+
+  .rencana {
+    border-style: dashed;
+  }
+
+  .rencana-label {
+    font-weight: 600;
+    color: var(--warna-redup);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ---------- Halaman login / daftar ---------- */
+
+  .auth {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+  }
+
+  .auth-form {
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .auth-form label {
+    margin-top: 0.5rem;
+    font-weight: 500;
+  }
+
+  .auth-form input {
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--warna-garis);
+    border-radius: var(--radius);
+  }
+
+  .auth-form .tombol {
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  /* ---------- Layar kecil (HP) ---------- */
+
+  @media (max-width: 768px) {
+    .layout {
+      flex-direction: column;
+    }
+
+    .sidebar {
+      width: 100%;
+      padding: 1rem;
+    }
+
+    .sidebar nav {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+    }
+
+    .sidebar-link {
+      white-space: nowrap;
+    }
+
+    .sidebar-bawah {
+      display: flex;
+      gap: 0.5rem;
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .konten {
+      padding: 1.25rem 1rem;
+    }
+
+    .page-header {
+      flex-direction: column;
+    }
+  }
+}

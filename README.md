@@ -13,22 +13,52 @@ Platform yang menggabungkan manajemen deadline tugas, jadwal, dan catatan pribad
 
 ## Stack
 
-- **Backend**: Laravel (REST API) + Laravel Sanctum
-- **Frontend**: React (Vite) + Tailwind CSS
-- **Database**: PostgreSQL
-- **Hosting (staging/demo)**: Home server pribadi (Docker + Tailscale)
+- **Backend**: Laravel (REST API) + Laravel Sanctum (token)
+- **Frontend**: React (Vite) + React Router + Tailwind CSS
+- **Database**: PostgreSQL — lokal lewat Docker, online di Supabase
+- **Hosting**: frontend di Vercel; backend ditentukan saat tahap 2 (kandidat: Render, Railway, Laravel Cloud)
 
 ## Struktur Folder
 
 ```
-tubes-tracking-belajar/
-├── backend/        # Laravel API
-├── frontend/        # React + Tailwind
-├── docs/             # Proposal, diagram, dokumen pendukung
+WebPro/
+├── backend/          # Laravel API
+├── frontend/         # React + Tailwind
+├── docs/             # Kontrak data, panduan, dokumen pendukung
 ├── docker-compose.yml
 ├── .gitignore
 └── .gitattributes
 ```
+
+### Isi `frontend/src`
+
+```
+src/
+├── main.jsx          # Titik awal: memasang <App /> ke index.html
+├── App.jsx           # Daftar alamat URL -> halaman (React Router)
+├── index.css         # Style global + Tailwind
+├── layouts/          # Kerangka halaman (sidebar mahasiswa / admin)
+├── components/       # Potongan UI yang dipakai berulang (PageHeader, SidebarMenu, ...)
+├── hooks/            # useMuatData: memuat data dari src/api
+├── api/              # Fungsi pengambil data (tahap 1: data palsu, tahap 2: Laravel)
+├── utils/format.js   # Format tanggal dan nama hari
+└── pages/            # Satu file = satu halaman, dikelompokkan per domain
+    ├── auth/         # Login, Daftar
+    ├── tugas/        # Deadline Tugas, Tugas Kelompok
+    ├── catatan/      # Catatan Saya, Editor, Jelajah, Detail, Tersimpan
+    ├── waktu/        # Jadwal Mingguan, Kalender, Checklist Belajar
+    └── admin/        # Ringkasan, Moderasi, Mata Kuliah, Kata Terlarang
+```
+
+## Rencana Pengerjaan
+
+1. **Tahap 1 — Frontend.** Setiap halaman sudah mengambil data palsu dari `frontend/src/api/`. Kerjakan tampilannya di file halaman masing-masing.
+2. **Tahap 2 — Backend.** Bergulir per fitur (boleh mulai sambil mengikuti materi Laravel di kelas): buat API Laravel-nya, lalu ganti isi fungsi di `frontend/src/api/` supaya memanggil backend.
+
+Dokumen wajib baca:
+
+- [`docs/panduan-frontend.md`](docs/panduan-frontend.md): cara kerja React di proyek ini, contekan JSX, aturan main.
+- [`docs/kontrak-data.md`](docs/kontrak-data.md): bentuk data, keputusan desain, daftar endpoint API, pembagian domain.
 
 ## Setup Awal (Sekali Saja)
 
@@ -36,14 +66,14 @@ tubes-tracking-belajar/
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - PHP ≥ 8.2 + Composer — disarankan install lewat [Laragon](https://laragon.org/) kalau di Windows
-- Node.js ≥ 18
+- Node.js ≥ 20.19
 - Git (CLI atau [GitHub Desktop](https://desktop.github.com/) buat yang belum terbiasa terminal)
 
 ### 2. Clone repo
 
 ```bash
 git clone <url-repo-ini>
-cd tubes-tracking-belajar
+cd WebPro
 ```
 
 Atau lewat GitHub Desktop: **File → Clone Repository**.
@@ -82,13 +112,22 @@ npm install
 npm run dev
 ```
 
-Frontend jalan di `http://localhost:5173`.
+Frontend jalan di `http://localhost:5173`. Selama tahap 1, frontend sudah bisa dipakai tanpa backend (memakai data palsu).
+
+## Deploy Frontend ke Vercel
+
+1. Login ke [Vercel](https://vercel.com) pakai akun GitHub, lalu **Add New → Project** dan pilih repo ini.
+2. Isi **Root Directory** dengan `frontend`. Framework terdeteksi otomatis sebagai Vite.
+3. Di **Environment Variables**, isi `VITE_API_URL` dengan alamat backend (boleh dikosongkan selama tahap 1).
+4. Klik **Deploy**. Setelah itu setiap push ke `main` otomatis di-deploy, dan setiap Pull Request dapat link preview sendiri.
+
+File `frontend/vercel.json` membuat semua alamat (misal `/tugas`) diarahkan ke `index.html`, supaya halaman tidak 404 waktu di-refresh.
 
 ## Alur Kerja Git
 
 Branch utama:
 
-- `main` — stabil, nanti di-deploy ke home server.
+- `main` — stabil, otomatis di-deploy ke Vercel.
 - `dev` — integrasi semua fitur, tempat testing bareng sebelum masuk `main`.
 - `fitur/<nama-fitur>` — satu branch per fitur, cabang dari `dev`.
 
