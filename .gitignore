@@ -1,0 +1,26 @@
+# Dependency (di-install ulang lewat composer install / npm install)
+node_modules/
+backend/vendor/
+
+# Rahasia & konfigurasi lokal
+.env
+!.env.example
+
+# Backend (Laravel)
+backend/storage/*.key
+backend/storage/logs/*.log
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/bootstrap/cache/*.php
+
+# Frontend (React + Vite)
+frontend/dist/
+.vercel/
+
+# Editor & OS
+/.vscode/
+/.idea/
+.DS_Store
+Thumbs.db
+*.log
