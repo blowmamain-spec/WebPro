@@ -157,13 +157,13 @@ Buat yang pakai GitHub Desktop: semua langkah di atas ada tombolnya — "Current
 | --- | --- |
 | Deadline Tugas (dengan prioritas) | *(isi)* |
 | Notifikasi | *(isi)* |
-| Catatan | *(isi)* |
+| Catatan | Nabil |
 | Kalender | *(isi)* |
-| Berbagi Catatan (posting, filter per matkul/tingkat) | *(isi)* |
-| Simpan Catatan | *(isi)* |
+| Berbagi Catatan (posting, filter per matkul/tingkat) | Nabil |
+| Simpan Catatan | Nabil |
 | Checklist Belajar Mandiri | *(isi)* |
 | Tugas Kelompok | *(isi)* |
-| Jadwal Mingguan | *(isi)* |
+| Jadwal Mingguan | Arzaq |
 
 ## Role
 
