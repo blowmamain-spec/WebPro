@@ -2,6 +2,14 @@
 
 const HARI = ['', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
 
+// Kategori mata kuliah selain `wajib`
+export const KATEGORI_MATA_KULIAH = {
+  agama: 'Agama',
+  peminatan_cyber_security: 'Peminatan Cyber Security',
+  peminatan_digital_innovation: 'Peminatan Digital Innovation',
+  pilihan_bebas: 'Pilihan Bebas',
+}
+
 // 1 -> "Senin"
 export function namaHari(nomor) {
   return HARI[nomor] ?? ''

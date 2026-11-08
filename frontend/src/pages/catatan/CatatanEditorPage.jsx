@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import PageHeader from '@/components/PageHeader'
+import OpsiMataKuliah from '@/components/OpsiMataKuliah'
 import { useMuatData } from '@/hooks/useMuatData'
 import { ambilCatatan, tambahCatatan, ubahCatatan } from '@/api/catatan'
 import { ambilDaftarMataKuliah } from '@/api/mataKuliah'
@@ -66,9 +67,7 @@ function FormCatatan({ catatan, daftarMataKuliah }) {
         <label className={kelasLabel} htmlFor="mata_kuliah_id">Mata kuliah</label>
         <select id="mata_kuliah_id" name="mata_kuliah_id" className={kelasIsian} value={form.mata_kuliah_id} onChange={ubahIsian}>
           <option value="">Umum</option>
-          {daftarMataKuliah.map((mataKuliah) => (
-            <option key={mataKuliah.id} value={mataKuliah.id}>{mataKuliah.nama}</option>
-          ))}
+          <OpsiMataKuliah daftar={daftarMataKuliah} />
         </select>
       </div>
 
