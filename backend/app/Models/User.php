@@ -15,7 +15,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 // `role` sengaja tidak ada di Fillable, supaya orang tidak bisa mendaftar sebagai admin lewat isi form.
 #[Fillable(['name', 'nim', 'email', 'password', 'semester'])]
-#[Hidden(['password', 'remember_token'])]
+#[Hidden(['password', 'remember_token', 'pivot'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -36,6 +36,17 @@ class User extends Authenticatable
     public function catatan(): HasMany
     {
         return $this->hasMany(Catatan::class);
+    }
+
+    public function checklist(): HasMany
+    {
+        return $this->hasMany(Checklist::class);
+    }
+
+    // Kelompok yang diikuti pengguna ini
+    public function kelompok(): BelongsToMany
+    {
+        return $this->belongsToMany(Kelompok::class, 'anggota_kelompok', 'user_id', 'kelompok_id');
     }
 
     public function catatanTersimpan(): BelongsToMany

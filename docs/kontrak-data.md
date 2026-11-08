@@ -104,6 +104,8 @@ Bentuk yang dikirim ke frontend:
 
 `jenis`: `deadline` | `moderasi` | `kelompok`.
 
+Pengingat `deadline` dibuat saat notifikasi dibuka, untuk tugas belum selesai yang deadline-nya kurang dari 24 jam lagi, masing-masing sekali. Cara ini dipilih karena hosting gratis tidak punya penjadwal yang selalu jalan. Waktunya dihitung dalam WIB, sesuai jam yang diisi pengguna.
+
 ---
 
 ## Tugas
@@ -136,9 +138,7 @@ Bentuk yang dikirim ke frontend:
 | `kelompok_id` | id, boleh kosong | kosong = tugas pribadi |
 | `ditugaskan_ke` | objek `{ id, name }` atau `null` | hanya untuk tugas kelompok (kolom tabelnya `ditugaskan_ke` berisi user id) |
 
-Backend saat ini baru mengurus tugas pribadi. Kolom `kelompok_id` dan `ditugaskan_ke` ditambahkan ke tabel saat fitur Tugas Kelompok dibuat, jadi untuk sementara belum ikut dikirim.
-
-`PUT /tugas/{id}` boleh mengirim sebagian kolom saja, misal `{ "status": "selesai" }`.
+`PUT /tugas/{id}` boleh mengirim sebagian kolom saja, misal `{ "status": "selesai" }`, dan berlaku juga untuk tugas kelompok. Tugas kelompok boleh diubah dan dihapus oleh semua anggota kelompok itu, dan hanya bisa ditugaskan ke anggotanya.
 
 ### `kelompok` dan `anggota_kelompok`
 
@@ -149,11 +149,14 @@ Backend saat ini baru mengurus tugas pribadi. Kolom `kelompok_id` dan `ditugaska
   "mata_kuliah_id": 2,
   "mata_kuliah": { "id": 2, "kode": "CBK3FAB3", "nama": "Rekayasa Perangkat Lunak" },
   "dibuat_oleh": 1,
+  "milik_saya": true,
   "anggota": [{ "id": 1, "name": "..." }, { "id": 2, "name": "..." }]
 }
 ```
 
-`anggota_kelompok` adalah tabel penghubung: `kelompok_id`, `user_id`.
+`anggota_kelompok` adalah tabel penghubung: `kelompok_id`, `user_id`. `milik_saya` bukan kolom tabel: dihitung backend, apakah pengguna yang login adalah pembuat kelompok.
+
+Hanya anggota yang bisa melihat kelompok dan tugasnya. Mengubah, menghapus, dan menambah anggota hanya boleh oleh pembuat. Anggota lain boleh keluar sendiri, sedangkan pembuat tidak bisa keluar dan harus menghapus kelompoknya. Tugas milik anggota yang keluar kembali jadi belum dibagi.
 
 ---
 
@@ -236,7 +239,7 @@ Tabel penghubung: `user_id`, `catatan_id`. Tidak dikirim sebagai objek tersendir
 
 ---
 
-## Daftar endpoint API (rencana)
+## Daftar endpoint API
 
 Semua alamat diawali `/api`. Kecuali `register` dan `login`, semuanya butuh token.
 
@@ -251,7 +254,8 @@ Semua alamat diawali `/api`. Kecuali `register` dan `login`, semuanya butuh toke
 | Tugas | `GET /tugas` (tugas pribadi) | `ambilDaftarTugas()` |
 | | `POST /tugas`, `PUT /tugas/{id}`, `DELETE /tugas/{id}` | `tambahTugas()`, `ubahTugas()`, `hapusTugas()` |
 | Kelompok | `GET /kelompok`, `GET /kelompok/{id}` | `ambilDaftarKelompok()`, `ambilKelompok()` |
-| | `POST /kelompok` | `buatKelompok()` |
+| | `POST /kelompok`, `PUT /kelompok/{id}`, `DELETE /kelompok/{id}` | `buatKelompok()`, `ubahKelompok()`, `hapusKelompok()` |
+| | `POST /kelompok/{id}/anggota`, `DELETE /kelompok/{id}/anggota/{userId}` | `tambahAnggota()`, `hapusAnggota()` |
 | | `GET /kelompok/{id}/tugas`, `POST /kelompok/{id}/tugas` | `ambilTugasKelompok()`, `tambahTugasKelompok()` |
 | Catatan | `GET /catatan` (milik sendiri) | `ambilCatatanSaya()` |
 | | `GET /catatan/{id}` | `ambilCatatan()` |

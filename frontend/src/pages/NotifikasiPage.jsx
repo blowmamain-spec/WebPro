@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '@/components/PageHeader';
 import { useMuatData } from '@/hooks/useMuatData';
@@ -10,8 +10,7 @@ import {
   Clock, 
   Users, 
   FileText, 
-  AlertCircle,
-  Circle
+  AlertCircle
 } from 'lucide-react';
 
 // Fungsi Helper untuk memetakan Ikon & Warna berdasarkan Jenis Notifikasi

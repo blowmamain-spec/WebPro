@@ -1,5 +1,6 @@
 import { db, balas, gagal, idBaru, cari, sekarang, ringkasPengguna } from './data-palsu'
 import { bentukCatatan } from './catatan'
+import { request, pakaiBackend } from './client'
 
 function kirimNotifikasi(userId, pesan, tautan) {
   db.notifikasi.push({
@@ -13,8 +14,10 @@ function kirimNotifikasi(userId, pesan, tautan) {
   })
 }
 
-// Tahap 2: GET /api/admin/ringkasan
+// GET /api/admin/ringkasan
 export function ambilRingkasan() {
+  if (pakaiBackend) return request('/admin/ringkasan')
+
   return balas({
     menunggu_moderasi: db.catatan.filter((c) => c.status === 'menunggu').length,
     laporan_baru: db.laporan.filter((l) => l.status === 'baru').length,
@@ -25,15 +28,19 @@ export function ambilRingkasan() {
 
 // ---------- Moderasi catatan ----------
 
-// Tahap 2: GET /api/admin/moderasi
-// Catatan yang kena filter kata terlarang
+// GET /api/admin/moderasi
+// Catatan yang menunggu keputusan admin
 export function ambilAntreanModerasi() {
+  if (pakaiBackend) return request('/admin/moderasi')
+
   const antrean = db.catatan.filter((c) => c.status === 'menunggu')
   return balas(antrean.map(bentukCatatan))
 }
 
-// Tahap 2: POST /api/admin/catatan/{id}/setujui
+// POST /api/admin/catatan/{id}/setujui
 export function setujuiCatatan(id) {
+  if (pakaiBackend) return request(`/admin/catatan/${id}/setujui`, { method: 'POST' })
+
   const catatan = cari(db.catatan, id)
   if (!catatan) return gagal(404, 'Catatan tidak ditemukan')
   catatan.status = 'publik'
@@ -41,8 +48,10 @@ export function setujuiCatatan(id) {
   return balas(bentukCatatan(catatan))
 }
 
-// Tahap 2: POST /api/admin/catatan/{id}/tolak
+// POST /api/admin/catatan/{id}/tolak
 export function tolakCatatan(id) {
+  if (pakaiBackend) return request(`/admin/catatan/${id}/tolak`, { method: 'POST' })
+
   const catatan = cari(db.catatan, id)
   if (!catatan) return gagal(404, 'Catatan tidak ditemukan')
   catatan.status = 'ditolak'
@@ -55,8 +64,10 @@ export function tolakCatatan(id) {
 
 // ---------- Laporan dari pengguna ----------
 
-// Tahap 2: GET /api/admin/laporan
+// GET /api/admin/laporan
 export function ambilDaftarLaporan() {
+  if (pakaiBackend) return request('/admin/laporan')
+
   const daftar = [...db.laporan]
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
     .map((l) => {
@@ -74,9 +85,11 @@ export function ambilDaftarLaporan() {
   return balas(daftar)
 }
 
-// Tahap 2: PUT /api/admin/laporan/{id}
+// PUT /api/admin/laporan/{id}
 // status: 'ditindaklanjuti' (catatan ikut ditolak) atau 'diabaikan'
 export function tindakLanjutiLaporan(id, status) {
+  if (pakaiBackend) return request(`/admin/laporan/${id}`, { method: 'PUT', body: { status } })
+
   const laporan = cari(db.laporan, id)
   if (!laporan) return gagal(404, 'Laporan tidak ditemukan')
   if (status === 'ditindaklanjuti') return tolakCatatan(laporan.catatan_id)
@@ -86,23 +99,29 @@ export function tindakLanjutiLaporan(id, status) {
 
 // ---------- Kata terlarang ----------
 
-// Tahap 2: GET /api/admin/kata-terlarang
+// GET /api/admin/kata-terlarang
 export function ambilKataTerlarang() {
+  if (pakaiBackend) return request('/admin/kata-terlarang')
+
   return balas(db.kataTerlarang)
 }
 
-// Tahap 2: POST /api/admin/kata-terlarang
+// POST /api/admin/kata-terlarang
 export function tambahKataTerlarang(kata) {
+  if (pakaiBackend) return request('/admin/kata-terlarang', { method: 'POST', body: { kata } })
+
   const bersih = (kata ?? '').trim().toLowerCase()
-  if (!bersih) return gagal(422, 'Kata wajib diisi')
-  if (db.kataTerlarang.some((k) => k.kata === bersih)) return gagal(422, 'Kata sudah ada')
+  if (!bersih) return gagal(422, 'Kata wajib diisi.')
+  if (db.kataTerlarang.some((k) => k.kata === bersih)) return gagal(422, 'Kata itu sudah ada.')
   const baru = { id: idBaru(db.kataTerlarang), kata: bersih }
   db.kataTerlarang.push(baru)
   return balas(baru)
 }
 
-// Tahap 2: DELETE /api/admin/kata-terlarang/{id}
+// DELETE /api/admin/kata-terlarang/{id}
 export function hapusKataTerlarang(id) {
+  if (pakaiBackend) return request(`/admin/kata-terlarang/${id}`, { method: 'DELETE' })
+
   db.kataTerlarang = db.kataTerlarang.filter((k) => k.id !== Number(id))
   return balas(null)
 }

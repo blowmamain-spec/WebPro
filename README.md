@@ -119,7 +119,7 @@ Frontend jalan di `http://localhost:5173`.
 Isi `VITE_API_URL` di `frontend/.env` menentukan sumber datanya:
 
 - **Kosong** (bawaan): semua fitur memakai data palsu, backend tidak perlu dijalankan.
-- **`http://localhost:8000`**: Login, Daftar, Profil, daftar Mata Kuliah, Jadwal, Deadline Tugas, Catatan Saya, Jelajah, dan Tersimpan memakai backend Laravel. Fitur lain masih memakai data palsu sampai backend-nya dibuat.
+- **`http://localhost:8000`**: semua fitur memakai backend Laravel dan datanya tersimpan di database. Halaman Kalender dan Beranda ikut membaca data dari fitur lain.
 
 Setelah mengubah file `.env`, jalankan ulang `npm run dev`.
 
