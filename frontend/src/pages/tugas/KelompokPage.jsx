@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageHeader from '@/components/PageHeader'
+import OpsiMataKuliah from '@/components/OpsiMataKuliah'
 import { useMuatData } from '@/hooks/useMuatData'
 import { ambilDaftarKelompok, buatKelompok } from '@/api/kelompok'
 import { ambilDaftarMataKuliah } from '@/api/mataKuliah'
@@ -9,7 +10,7 @@ const gayaInput =
   'w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-zinc-900'
 
 function KelompokPage() {
-  const { data: daftarKelompok, memuat, setData } = useMuatData(() => ambilDaftarKelompok(), [])
+  const { data: daftarKelompok, memuat, error, setData } = useMuatData(() => ambilDaftarKelompok(), [])
   const { data: daftarMataKuliah } = useMuatData(() => ambilDaftarMataKuliah(), [])
 
   const [formTerbuka, setFormTerbuka] = useState(false)
@@ -83,11 +84,7 @@ function KelompokPage() {
                 className={gayaInput}
               >
                 <option value="">Tidak ada</option>
-                {(daftarMataKuliah ?? []).map((mk) => (
-                  <option key={mk.id} value={mk.id}>
-                    {mk.nama}
-                  </option>
-                ))}
+                <OpsiMataKuliah daftar={daftarMataKuliah ?? []} />
               </select>
             </div>
           </div>
@@ -115,6 +112,8 @@ function KelompokPage() {
 
       {memuat ? (
         <p className="py-10 text-sm text-zinc-400">Memuat...</p>
+      ) : error ? (
+        <p className="py-10 text-sm text-red-700">{error.message}</p>
       ) : daftarKelompok.length === 0 ? (
         <p className="py-12 text-sm text-zinc-500">Belum ada kelompok.</p>
       ) : (

@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\Catatan;
 use App\Models\Jadwal;
 use App\Models\KataTerlarang;
+use App\Models\Kelompok;
+use App\Models\Laporan;
 use App\Models\MataKuliah;
 use App\Models\Tugas;
 use App\Models\User;
@@ -104,5 +106,57 @@ class DatabaseSeeder extends Seeder
 
         $owasp = Catatan::where('judul', 'Ringkasan OWASP Top 10')->first();
         $mahasiswa->catatanTersimpan()->syncWithoutDetaching([$owasp->id]);
+
+        // Contoh laporan untuk halaman Moderasi admin
+        $python = Catatan::where('judul', 'Pola perulangan di Python')->first();
+        Laporan::firstOrCreate(
+            ['catatan_id' => $python->id, 'pelapor_id' => $budi->id],
+            ['alasan' => 'Isinya terlalu singkat, bukan catatan kuliah'],
+        );
+
+        $checklistContoh = [
+            ['Persiapan UTS Basis Data', 'CBK2LAB4', [['Rangkum materi ERD', true], ['Latihan soal normalisasi', false], ['Coba query JOIN', false]]],
+            ['Belajar React', 'CBK3DAB3', [['Pahami useState dan props', true], ['Coba React Router', false]]],
+        ];
+
+        foreach ($checklistContoh as [$judul, $kode, $daftarItem]) {
+            $checklist = $mahasiswa->checklist()->firstOrCreate(
+                ['judul' => $judul],
+                ['mata_kuliah_id' => $idMataKuliah($kode)],
+            );
+
+            foreach ($daftarItem as $urutan => [$isi, $selesai]) {
+                $checklist->items()->firstOrCreate(['isi' => $isi], ['selesai' => $selesai, 'urutan' => $urutan + 1]);
+            }
+        }
+
+        $kelompok = Kelompok::firstOrNew(['nama' => 'Kelompok 6 RPL']);
+        $kelompok->mata_kuliah_id = $idMataKuliah('CBK3FAB3');
+        $kelompok->dibuat_oleh = $mahasiswa->id;
+        $kelompok->save();
+        $kelompok->anggota()->syncWithoutDetaching([$mahasiswa->id, $budi->id, $siti->id]);
+
+        $tugasKelompok = [
+            ['judul' => 'Use case diagram', 'deskripsi' => 'Pakai draw.io', 'hari' => 3, 'prioritas' => 'tinggi', 'status' => 'dikerjakan', 'ditugaskan_ke' => $budi->id],
+            ['judul' => 'Slide presentasi', 'deskripsi' => null, 'hari' => 7, 'prioritas' => 'sedang', 'status' => 'belum', 'ditugaskan_ke' => null],
+        ];
+
+        foreach ($tugasKelompok as $t) {
+            if ($kelompok->tugas()->where('judul', $t['judul'])->exists()) {
+                continue;
+            }
+
+            $tugas = new Tugas([
+                'mata_kuliah_id' => $kelompok->mata_kuliah_id,
+                'judul' => $t['judul'],
+                'deskripsi' => $t['deskripsi'],
+                'deadline' => now()->addDays($t['hari'])->setTime(23, 59),
+                'prioritas' => $t['prioritas'],
+                'status' => $t['status'],
+                'ditugaskan_ke' => $t['ditugaskan_ke'],
+            ]);
+            $tugas->user_id = $mahasiswa->id;
+            $kelompok->tugas()->save($tugas);
+        }
     }
 }

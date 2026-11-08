@@ -24,3 +24,6 @@ frontend/dist/
 .DS_Store
 Thumbs.db
 *.log
+
+# Arsip jangan ikut masuk repo
+*.zip

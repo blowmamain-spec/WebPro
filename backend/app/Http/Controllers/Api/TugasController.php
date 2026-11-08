@@ -4,17 +4,24 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tugas;
+use App\Models\User;
+use App\Notifications\PesanAplikasi;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class TugasController extends Controller
 {
-    // READ: hanya tugas milik pengguna yang login, yang deadline-nya paling dekat di atas
+    private const RELASI = ['mataKuliah:id,kode,nama', 'ditugaskanKe:id,name'];
+
+    // READ: hanya tugas pribadi, yang deadline-nya paling dekat di atas.
+    // Tugas kelompok diambil lewat GET /kelompok/{id}/tugas.
     public function index(Request $request): JsonResponse
     {
         $tugas = $request->user()->tugas()
-            ->with('mataKuliah:id,kode,nama')
+            ->whereNull('kelompok_id')
+            ->with(self::RELASI)
             ->orderBy('deadline')
             ->get();
 
@@ -24,36 +31,70 @@ class TugasController extends Controller
     // CREATE
     public function store(Request $request): JsonResponse
     {
-        $data = $request->validate($this->aturan(wajib: true), $this->pesan());
+        $data = $request->validate(self::aturan(wajib: true), self::pesan());
         $tugas = $request->user()->tugas()->create($data);
 
-        return response()->json($tugas->load('mataKuliah:id,kode,nama'), 201);
+        return response()->json($tugas->load(self::RELASI), 201);
     }
 
-    // UPDATE: boleh mengirim sebagian kolom saja, misal { "status": "selesai" }
+    // UPDATE: boleh mengirim sebagian kolom saja, misal { "status": "selesai" }. Berlaku juga untuk tugas kelompok.
     public function update(Request $request, int $id): JsonResponse
     {
-        $tugas = $this->cariMilikSendiri($request, $id);
-        $tugas->update($request->validate($this->aturan(wajib: false), $this->pesan()));
+        $tugas = $this->cariYangBolehDiubah($request, $id);
 
-        return response()->json($tugas->load('mataKuliah:id,kode,nama'));
+        $aturan = self::aturan(wajib: false);
+        if ($tugas->kelompok_id) {
+            $aturan['ditugaskan_ke'] = ['sometimes', 'nullable', 'integer'];
+        }
+        $data = $request->validate($aturan, self::pesan());
+
+        $penanggungJawabBaru = $data['ditugaskan_ke'] ?? null;
+        if ($tugas->kelompok_id && $penanggungJawabBaru
+            && ! $tugas->kelompok->anggota()->whereKey($penanggungJawabBaru)->exists()) {
+            abort(422, 'Tugas hanya bisa diberikan ke anggota kelompok.');
+        }
+
+        $sebelumnya = $tugas->ditugaskan_ke;
+        $tugas->fill($data);
+
+        // Deadline berubah: pengingat boleh dikirim lagi untuk deadline yang baru
+        if ($tugas->isDirty('deadline')) {
+            $tugas->pengingat_dikirim_pada = null;
+        }
+        $tugas->save();
+
+        if ($penanggungJawabBaru && $penanggungJawabBaru !== $sebelumnya && $penanggungJawabBaru !== $request->user()->id) {
+            User::find($penanggungJawabBaru)?->notify(new PesanAplikasi(
+                'kelompok',
+                "Kamu ditugaskan mengerjakan \"{$tugas->judul}\"",
+                "/kelompok/{$tugas->kelompok_id}",
+            ));
+        }
+
+        return response()->json($tugas->load(self::RELASI));
     }
 
     // DELETE
     public function destroy(Request $request, int $id): Response
     {
-        $this->cariMilikSendiri($request, $id)->delete();
+        $this->cariYangBolehDiubah($request, $id)->delete();
 
         return response()->noContent();
     }
 
-    // Dicari lewat relasi pengguna, jadi tugas milik orang lain dianggap tidak ada (404).
-    private function cariMilikSendiri(Request $request, int $id): Tugas
+    // Tugas pribadi milik sendiri, atau tugas di kelompok yang diikuti.
+    // Selain itu dianggap tidak ada (404).
+    private function cariYangBolehDiubah(Request $request, int $id): Tugas
     {
-        return $request->user()->tugas()->find($id) ?? abort(404, 'Tugas tidak ditemukan.');
+        $user = $request->user();
+
+        return Tugas::where(fn (Builder $q) => $q
+            ->where(fn (Builder $pribadi) => $pribadi->whereNull('kelompok_id')->where('user_id', $user->id))
+            ->orWhereIn('kelompok_id', $user->kelompok()->select('kelompok.id')))
+            ->find($id) ?? abort(404, 'Tugas tidak ditemukan.');
     }
 
-    private function aturan(bool $wajib): array
+    public static function aturan(bool $wajib): array
     {
         $kolomWajib = $wajib ? ['required'] : ['sometimes', 'required'];
 
@@ -67,7 +108,7 @@ class TugasController extends Controller
         ];
     }
 
-    private function pesan(): array
+    public static function pesan(): array
     {
         return [
             'judul.required' => 'Judul wajib diisi.',
