@@ -129,6 +129,10 @@ Bentuk yang dikirim ke frontend:
 | `kelompok_id` | id, boleh kosong | kosong = tugas pribadi |
 | `ditugaskan_ke` | objek `{ id, name }` atau `null` | hanya untuk tugas kelompok (kolom tabelnya `ditugaskan_ke` berisi user id) |
 
+Backend saat ini baru mengurus tugas pribadi. Kolom `kelompok_id` dan `ditugaskan_ke` ditambahkan ke tabel saat fitur Tugas Kelompok dibuat, jadi untuk sementara belum ikut dikirim.
+
+`PUT /tugas/{id}` boleh mengirim sebagian kolom saja, misal `{ "status": "selesai" }`.
+
 ### `kelompok` dan `anggota_kelompok`
 
 ```json
@@ -161,8 +165,9 @@ Bentuk yang dikirim ke frontend:
   "isi": "## 1NF\nSetiap kolom berisi nilai tunggal...",
   "status": "publik",
   "tersimpan": false,
-  "created_at": "2026-10-20T14:00:00",
-  "updated_at": "2026-10-21T09:00:00"
+  "milik_saya": true,
+  "created_at": "2026-10-20T14:00:00.000000Z",
+  "updated_at": "2026-10-21T09:00:00.000000Z"
 }
 ```
 
@@ -171,6 +176,8 @@ Bentuk yang dikirim ke frontend:
 | `isi` | teks (Markdown) | |
 | `status` | `pribadi` \| `publik` \| `menunggu` \| `ditolak` | lihat alur di bawah |
 | `tersimpan` | boolean | **bukan kolom tabel**: dihitung backend, apakah pengguna yang login sudah menyimpan catatan ini |
+| `milik_saya` | boolean | **bukan kolom tabel**: dihitung backend, apakah catatan ini ditulis pengguna yang login |
+| `created_at`, `updated_at` | tanggal + jam UTC | waktu otomatis dari Laravel. `formatTanggal()` mengubahnya ke waktu lokal |
 
 Alur status:
 
@@ -179,6 +186,8 @@ pribadi ──(bagikan)──> cek kata terlarang ──aman──> publik ─�
                                           └─kena──> menunggu ──(admin setujui)──> publik
                                                              └─(admin tolak)───> ditolak
 ```
+
+Pengguna hanya boleh meminta status `pribadi` atau `publik`. Catatan yang sudah `menunggu` atau `ditolak` tidak bisa kembali sendiri ke `publik` atau `pribadi`: permintaan `publik` membuatnya `menunggu` keputusan admin, dan permintaan `pribadi` tidak mengubah statusnya. Kedua status itu memang hanya terlihat oleh penulisnya. Tanpa aturan ini, penolakan admin bisa dilewati dengan membagikan ulang catatan.
 
 ### `catatan_tersimpan`
 

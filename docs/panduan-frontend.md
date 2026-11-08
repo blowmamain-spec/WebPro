@@ -150,7 +150,7 @@ Halaman **tidak pernah** menulis data sendiri dan tidak memanggil `fetch` langsu
 - **Data palsu (`VITE_API_URL` kosong):** fungsi di `src/api/` membaca `src/api/data-palsu.js`. Tambah/ubah/hapus juga jalan, tapi kembali seperti semula setelah refresh.
 - **Backend (`VITE_API_URL` diisi):** fungsi yang sudah punya backend memanggil Laravel lewat `client.js`, dan datanya tersimpan di database. Nama fungsinya sama, jadi **halamanmu tidak perlu diubah**.
 
-Yang sudah tersambung ke backend: `auth.js`, `jadwal.js`, dan `ambilDaftarMataKuliah()`. Contoh polanya ada di `src/api/jadwal.js`.
+Yang sudah tersambung ke backend: `auth.js`, `jadwal.js`, `tugas.js`, `catatan.js`, dan `ambilDaftarMataKuliah()`. Contoh polanya ada di `src/api/jadwal.js`.
 
 Fungsi apa saja yang tersedia untuk halamanmu ditulis di komentar bagian atas file halaman. Daftar lengkapnya ada di `docs/kontrak-data.md`.
 

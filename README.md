@@ -101,7 +101,7 @@ php artisan migrate --seed
 php artisan serve
 ```
 
-Backend jalan di `http://localhost:8000`. `--seed` mengisi daftar mata kuliah dan dua akun contoh (`mahasiswa@contoh.ac.id` dan `admin@contoh.ac.id`, password ada di `database/seeders/DatabaseSeeder.php`).
+Backend jalan di `http://localhost:8000`. `--seed` mengisi daftar mata kuliah, kata terlarang, contoh isi aplikasi, dan akun contoh (`mahasiswa@contoh.ac.id`, `budi@contoh.ac.id`, `siti@contoh.ac.id`, `admin@contoh.ac.id`, password ada di `database/seeders/DatabaseSeeder.php`). Aman dijalankan berkali-kali.
 
 ### 5. Setup frontend
 
@@ -119,7 +119,7 @@ Frontend jalan di `http://localhost:5173`.
 Isi `VITE_API_URL` di `frontend/.env` menentukan sumber datanya:
 
 - **Kosong** (bawaan): semua fitur memakai data palsu, backend tidak perlu dijalankan.
-- **`http://localhost:8000`**: Login, Daftar, Profil, daftar Mata Kuliah, dan Jadwal memakai backend Laravel. Fitur lain masih memakai data palsu sampai backend-nya dibuat.
+- **`http://localhost:8000`**: Login, Daftar, Profil, daftar Mata Kuliah, Jadwal, Deadline Tugas, Catatan Saya, Jelajah, dan Tersimpan memakai backend Laravel. Fitur lain masih memakai data palsu sampai backend-nya dibuat.
 
 Setelah mengubah file `.env`, jalankan ulang `npm run dev`.
 

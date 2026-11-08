@@ -81,6 +81,7 @@ function DashboardPage() {
   const { data: daftarCatatan, memuat: memuatCatatan } = useMuatData(() => jelajahCatatan(), []);
 
   const tugasTerdekat = [...(daftarTugas ?? [])]
+    .filter((tugas) => tugas.status !== 'selesai')
     .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
     .slice(0, 3);
 
