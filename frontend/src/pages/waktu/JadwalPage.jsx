@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import PageHeader from '@/components/PageHeader'
+import OpsiMataKuliah from '@/components/OpsiMataKuliah'
 import { useMuatData } from '@/hooks/useMuatData'
 import {
   ambilJadwal,
@@ -270,11 +271,7 @@ function JadwalPage() {
                 required
               >
                 <option value="" disabled>Pilih mata kuliah</option>
-                {daftarMataKuliah.map((mataKuliah) => (
-                  <option key={mataKuliah.id} value={mataKuliah.id}>
-                    {mataKuliah.nama}
-                  </option>
-                ))}
+                <OpsiMataKuliah daftar={daftarMataKuliah} />
               </select>
 
               <label>Jam Mulai</label>

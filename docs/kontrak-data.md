@@ -25,7 +25,7 @@ Dokumen ini adalah **kesepakatan bentuk data** antara frontend dan backend. Fron
 - Kalau gagal, backend mengirim format bawaan Laravel: `{ "message": "...", "errors": { "judul": ["Judul wajib diisi."] } }` dengan status 422 (validasi), 401 (belum login), 403 (tidak boleh), atau 404 (tidak ada).
 - Kalau sebuah data punya relasi (misal tugas → mata kuliah), API mengirim **id-nya dan objek ringkasnya**:
   ```json
-  { "mata_kuliah_id": 2, "mata_kuliah": { "id": 2, "kode": "TIR302", "nama": "Rekayasa Perangkat Lunak" } }
+  { "mata_kuliah_id": 2, "mata_kuliah": { "id": 2, "kode": "CBK3FAB3", "nama": "Rekayasa Perangkat Lunak" } }
   ```
 
 ## Pembagian domain
@@ -60,10 +60,17 @@ Dokumen ini adalah **kesepakatan bentuk data** antara frontend dan backend. Fron
 ### `mata_kuliah`
 
 ```json
-{ "id": 2, "kode": "TIR302", "nama": "Rekayasa Perangkat Lunak", "semester": 5 }
+{ "id": 2, "kode": "CBK3FAB3", "nama": "Rekayasa Perangkat Lunak", "semester": 5, "sks": 3, "kategori": "wajib" }
 ```
 
-`semester` dipakai untuk filter "per tingkat" di Jelajah Catatan.
+Isinya kurikulum reguler S1 Teknologi Informasi dari [situs prodi](https://bit.telkomuniversity.ac.id/regular-curriculum-2/), disimpan di `backend/database/seeders/MataKuliahSeeder.php`.
+
+| Kolom | Tipe | Keterangan |
+| --- | --- | --- |
+| `kode` | string, unik | kode mata kuliah di kurikulum |
+| `semester` | angka 1–8 | dipakai untuk filter di Jelajah Catatan. Mata kuliah peminatan dan pilihan bebas ditulis `7`, karena mulai diambil di semester 7. Agama ditulis `2` |
+| `sks` | angka | |
+| `kategori` | `wajib` \| `agama` \| `peminatan_cyber_security` \| `peminatan_digital_innovation` \| `pilihan_bebas` | |
 
 ### `kata_terlarang`
 
@@ -108,7 +115,7 @@ Bentuk yang dikirim ke frontend:
   "id": 1,
   "user_id": 1,
   "mata_kuliah_id": 2,
-  "mata_kuliah": { "id": 2, "kode": "TIR302", "nama": "Rekayasa Perangkat Lunak" },
+  "mata_kuliah": { "id": 2, "kode": "CBK3FAB3", "nama": "Rekayasa Perangkat Lunak" },
   "judul": "Laporan SRS",
   "deskripsi": "Bab 1-3",
   "deadline": "2026-11-02T23:59:00",
@@ -140,7 +147,7 @@ Backend saat ini baru mengurus tugas pribadi. Kolom `kelompok_id` dan `ditugaska
   "id": 1,
   "nama": "Kelompok 6 RPL",
   "mata_kuliah_id": 2,
-  "mata_kuliah": { "id": 2, "kode": "TIR302", "nama": "Rekayasa Perangkat Lunak" },
+  "mata_kuliah": { "id": 2, "kode": "CBK3FAB3", "nama": "Rekayasa Perangkat Lunak" },
   "dibuat_oleh": 1,
   "anggota": [{ "id": 1, "name": "..." }, { "id": 2, "name": "..." }]
 }
@@ -160,7 +167,7 @@ Backend saat ini baru mengurus tugas pribadi. Kolom `kelompok_id` dan `ditugaska
   "user_id": 1,
   "penulis": { "id": 1, "name": "..." },
   "mata_kuliah_id": 3,
-  "mata_kuliah": { "id": 3, "kode": "TIB201", "nama": "Basis Data", "semester": 3 },
+  "mata_kuliah": { "id": 3, "kode": "CBK2LAB4", "nama": "Sistem Manajemen Basis Data", "semester": 4 },
   "judul": "Normalisasi 1NF-3NF",
   "isi": "## 1NF\nSetiap kolom berisi nilai tunggal...",
   "status": "publik",
@@ -203,7 +210,7 @@ Tabel penghubung: `user_id`, `catatan_id`. Tidak dikirim sebagai objek tersendir
 {
   "id": 1,
   "mata_kuliah_id": 2,
-  "mata_kuliah": { "id": 2, "kode": "TIR302", "nama": "Rekayasa Perangkat Lunak" },
+  "mata_kuliah": { "id": 2, "kode": "CBK3FAB3", "nama": "Rekayasa Perangkat Lunak" },
   "hari": 1,
   "jam_mulai": "07:30",
   "jam_selesai": "10:30",
@@ -249,7 +256,7 @@ Semua alamat diawali `/api`. Kecuali `register` dan `login`, semuanya butuh toke
 | Catatan | `GET /catatan` (milik sendiri) | `ambilCatatanSaya()` |
 | | `GET /catatan/{id}` | `ambilCatatan()` |
 | | `POST /catatan`, `PUT /catatan/{id}`, `DELETE /catatan/{id}` | `tambahCatatan()`, `ubahCatatan()`, `hapusCatatan()` |
-| | `GET /jelajah?mata_kuliah_id=&semester=&cari=` | `jelajahCatatan()` |
+| | `GET /jelajah?mata_kuliah_id=&semester=&kategori=&cari=` | `jelajahCatatan()` |
 | | `GET /tersimpan` | `ambilCatatanTersimpan()` |
 | | `POST /catatan/{id}/simpan`, `DELETE /catatan/{id}/simpan` | `simpanCatatan()`, `batalSimpanCatatan()` |
 | | `POST /catatan/{id}/laporan` | `laporkanCatatan()` |

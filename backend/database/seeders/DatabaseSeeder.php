@@ -18,19 +18,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $mataKuliah = [
-            ['kode' => 'TIW301', 'nama' => 'Pemrograman Web', 'semester' => 5],
-            ['kode' => 'TIR302', 'nama' => 'Rekayasa Perangkat Lunak', 'semester' => 5],
-            ['kode' => 'TIB201', 'nama' => 'Basis Data', 'semester' => 3],
-            ['kode' => 'TIK303', 'nama' => 'Keamanan Siber', 'semester' => 5],
-            ['kode' => 'TIP304', 'nama' => 'Pemrograman Berorientasi Objek', 'semester' => 5],
-            ['kode' => 'TIJ305', 'nama' => 'Jaringan Nirkabel', 'semester' => 5],
-            ['kode' => 'TIA101', 'nama' => 'Algoritma dan Pemrograman', 'semester' => 1],
-        ];
-
-        foreach ($mataKuliah as $mk) {
-            MataKuliah::updateOrCreate(['kode' => $mk['kode']], $mk);
-        }
+        $this->call(MataKuliahSeeder::class);
 
         foreach (['contohkasar', 'jualjoki'] as $kata) {
             KataTerlarang::firstOrCreate(['kata' => $kata]);
@@ -66,9 +54,9 @@ class DatabaseSeeder extends Seeder
         // user_id tidak ada di $fillable model, jadi diisi lewat unguard di sini
         Model::unguarded(function () use ($mahasiswa, $budi, $siti, $idMataKuliah) {
             $jadwal = [
-                ['kode' => 'TIR302', 'hari' => 1, 'jam_mulai' => '07:30', 'jam_selesai' => '10:30', 'ruangan' => 'KU3.04.12'],
-                ['kode' => 'TIW301', 'hari' => 2, 'jam_mulai' => '10:30', 'jam_selesai' => '13:30', 'ruangan' => 'Lab Komputer 2'],
-                ['kode' => 'TIK303', 'hari' => 3, 'jam_mulai' => '13:30', 'jam_selesai' => '16:30', 'ruangan' => 'KU3.02.05'],
+                ['kode' => 'CBK3FAB3', 'hari' => 1, 'jam_mulai' => '07:30', 'jam_selesai' => '10:30', 'ruangan' => 'KU3.04.12'],
+                ['kode' => 'CBK3DAB3', 'hari' => 2, 'jam_mulai' => '10:30', 'jam_selesai' => '13:30', 'ruangan' => 'Lab Komputer 2'],
+                ['kode' => 'CBK3AAB3', 'hari' => 3, 'jam_mulai' => '13:30', 'jam_selesai' => '16:30', 'ruangan' => 'KU3.02.05'],
             ];
 
             foreach ($jadwal as $j) {
@@ -79,10 +67,10 @@ class DatabaseSeeder extends Seeder
             }
 
             $tugas = [
-                ['judul' => 'Laporan SRS', 'kode' => 'TIR302', 'deskripsi' => 'Bab 1 sampai 3', 'hari' => 2, 'prioritas' => 'tinggi', 'status' => 'dikerjakan'],
-                ['judul' => 'Kuis Jaringan Nirkabel', 'kode' => 'TIJ305', 'deskripsi' => null, 'hari' => 5, 'prioritas' => 'sedang', 'status' => 'belum'],
-                ['judul' => 'Write-up CTF minggu 8', 'kode' => 'TIK303', 'deskripsi' => 'Minimal 3 soal', 'hari' => 9, 'prioritas' => 'rendah', 'status' => 'belum'],
-                ['judul' => 'Latihan inheritance', 'kode' => 'TIP304', 'deskripsi' => null, 'hari' => -3, 'prioritas' => 'sedang', 'status' => 'selesai'],
+                ['judul' => 'Laporan SRS', 'kode' => 'CBK3FAB3', 'deskripsi' => 'Bab 1 sampai 3', 'hari' => 2, 'prioritas' => 'tinggi', 'status' => 'dikerjakan'],
+                ['judul' => 'Kuis Jaringan Nirkabel', 'kode' => 'CBK4SBB3', 'deskripsi' => null, 'hari' => 5, 'prioritas' => 'sedang', 'status' => 'belum'],
+                ['judul' => 'Write-up CTF minggu 8', 'kode' => 'CBK3AAB3', 'deskripsi' => 'Minimal 3 soal', 'hari' => 9, 'prioritas' => 'rendah', 'status' => 'belum'],
+                ['judul' => 'Latihan inheritance', 'kode' => 'CBK3CAB4', 'deskripsi' => null, 'hari' => -3, 'prioritas' => 'sedang', 'status' => 'selesai'],
             ];
 
             foreach ($tugas as $t) {
@@ -99,11 +87,11 @@ class DatabaseSeeder extends Seeder
             }
 
             $catatan = [
-                [$mahasiswa, 'TIB201', 'Normalisasi 1NF sampai 3NF', "## 1NF\nSetiap kolom berisi nilai tunggal.\n\n## 2NF\nTidak ada ketergantungan parsial.", 'publik'],
-                [$mahasiswa, 'TIW301', 'Catatan pribadi: setup Laravel', 'composer create-project laravel/laravel backend', 'pribadi'],
-                [$budi, 'TIK303', 'Ringkasan OWASP Top 10', "1. Broken Access Control\n2. Cryptographic Failures\n3. Injection", 'publik'],
-                [$siti, 'TIA101', 'Pola perulangan di Python', 'for, while, dan list comprehension.', 'publik'],
-                [$budi, 'TIR302', 'Rangkuman Scrum', 'Isi catatan ini mengandung contohkasar.', 'menunggu'],
+                [$mahasiswa, 'CBK2LAB4', 'Normalisasi 1NF sampai 3NF', "## 1NF\nSetiap kolom berisi nilai tunggal.\n\n## 2NF\nTidak ada ketergantungan parsial.", 'publik'],
+                [$mahasiswa, 'CBK3DAB3', 'Catatan pribadi: setup Laravel', 'composer create-project laravel/laravel backend', 'pribadi'],
+                [$budi, 'CBK3AAB3', 'Ringkasan OWASP Top 10', "1. Broken Access Control\n2. Cryptographic Failures\n3. Injection", 'publik'],
+                [$siti, 'CBK1HAB4', 'Pola perulangan di Python', 'for, while, dan list comprehension.', 'publik'],
+                [$budi, 'CBK3FAB3', 'Rangkuman Scrum', 'Isi catatan ini mengandung contohkasar.', 'menunggu'],
             ];
 
             foreach ($catatan as [$penulis, $kode, $judul, $isi, $status]) {
