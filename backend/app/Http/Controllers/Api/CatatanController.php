@@ -78,12 +78,13 @@ class CatatanController extends Controller
         return response()->noContent();
     }
 
-    // Catatan publik, bisa disaring dengan ?mata_kuliah_id=&semester=&cari=
+    // Catatan publik, bisa disaring dengan ?mata_kuliah_id=&semester=&kategori=&cari=
     public function jelajah(Request $request): JsonResponse
     {
         $filter = $request->validate([
             'mata_kuliah_id' => ['nullable', 'integer'],
             'semester' => ['nullable', 'integer', 'between:1,14'],
+            'kategori' => ['nullable', 'string', 'max:40'],
             'cari' => ['nullable', 'string', 'max:100'],
         ]);
 
@@ -91,6 +92,7 @@ class CatatanController extends Controller
             ->where('status', 'publik')
             ->when($filter['mata_kuliah_id'] ?? null, fn (Builder $q, $id) => $q->where('mata_kuliah_id', $id))
             ->when($filter['semester'] ?? null, fn (Builder $q, $semester) => $q->whereRelation('mataKuliah', 'semester', $semester))
+            ->when($filter['kategori'] ?? null, fn (Builder $q, $kategori) => $q->whereRelation('mataKuliah', 'kategori', $kategori))
             ->when($filter['cari'] ?? null, function (Builder $q, string $cari) {
                 // % dan _ punya arti khusus di LIKE, jadi diperlakukan sebagai teks biasa
                 $pola = '%'.addcslashes($cari, '\\%_').'%';

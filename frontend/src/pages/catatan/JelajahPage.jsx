@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { BookOpen, Search } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import KartuCatatan from '@/components/catatan/KartuCatatan'
+import OpsiMataKuliah from '@/components/OpsiMataKuliah'
+import { KATEGORI_MATA_KULIAH } from '@/utils/format'
 import { useMuatData } from '@/hooks/useMuatData'
 import { jelajahCatatan } from '@/api/catatan'
 import { ambilDaftarMataKuliah } from '@/api/mataKuliah'
@@ -11,13 +13,23 @@ const kelasIsian =
 
 function JelajahPage() {
   // `filter` yang dikirim ke API. Kata kunci baru masuk ke sini setelah form dikirim, bukan tiap huruf diketik.
-  const [filter, setFilter] = useState({ mata_kuliah_id: '', semester: '', cari: '' })
+  const [filter, setFilter] = useState({ kategori: '', semester: '', mata_kuliah_id: '', cari: '' })
   const [kataKunci, setKataKunci] = useState('')
 
   const { data: daftarCatatan, memuat, error } = useMuatData(() => jelajahCatatan(filter), [filter])
   const { data: daftarMataKuliah } = useMuatData(() => ambilDaftarMataKuliah(), [])
 
   const daftarSemester = [...new Set((daftarMataKuliah ?? []).map((mk) => mk.semester))].sort((a, b) => a - b)
+
+  // Pilihan mata kuliah mengikuti kategori dan semester yang sedang dipilih
+  const mataKuliahSesuai = (daftarMataKuliah ?? [])
+    .filter((mk) => !filter.kategori || mk.kategori === filter.kategori)
+    .filter((mk) => !filter.semester || mk.semester === Number(filter.semester))
+
+  // Kategori atau semester berubah: mata kuliah yang dipilih bisa jadi sudah tidak cocok, jadi dikosongkan
+  function ubahPenyaring(kolom, nilai) {
+    setFilter({ ...filter, [kolom]: nilai, mata_kuliah_id: '' })
+  }
 
   function cari(event) {
     event.preventDefault()
@@ -28,16 +40,17 @@ function JelajahPage() {
     <div className="min-h-full space-y-6 bg-slate-50 p-4 sm:p-6 lg:p-8">
       <PageHeader judul="Jelajah Catatan" deskripsi="Catatan yang dibagikan mahasiswa lain." />
 
-      <form className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-4 md:grid-cols-[1fr_1fr_2fr]" onSubmit={cari}>
+      <form className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:grid-cols-3 lg:grid-cols-[1fr_1fr_1.5fr_2fr]" onSubmit={cari}>
         <select
           className={kelasIsian}
-          aria-label="Filter mata kuliah"
-          value={filter.mata_kuliah_id}
-          onChange={(event) => setFilter({ ...filter, mata_kuliah_id: event.target.value })}
+          aria-label="Filter kategori"
+          value={filter.kategori}
+          onChange={(event) => ubahPenyaring('kategori', event.target.value)}
         >
-          <option value="">Semua mata kuliah</option>
-          {(daftarMataKuliah ?? []).map((mk) => (
-            <option key={mk.id} value={mk.id}>{mk.nama}</option>
+          <option value="">Semua kategori</option>
+          <option value="wajib">Wajib</option>
+          {Object.entries(KATEGORI_MATA_KULIAH).map(([kategori, label]) => (
+            <option key={kategori} value={kategori}>{label}</option>
           ))}
         </select>
 
@@ -45,7 +58,7 @@ function JelajahPage() {
           className={kelasIsian}
           aria-label="Filter semester"
           value={filter.semester}
-          onChange={(event) => setFilter({ ...filter, semester: event.target.value })}
+          onChange={(event) => ubahPenyaring('semester', event.target.value)}
         >
           <option value="">Semua semester</option>
           {daftarSemester.map((semester) => (
@@ -53,7 +66,17 @@ function JelajahPage() {
           ))}
         </select>
 
-        <div className="flex gap-2">
+        <select
+          className={kelasIsian}
+          aria-label="Filter mata kuliah"
+          value={filter.mata_kuliah_id}
+          onChange={(event) => setFilter({ ...filter, mata_kuliah_id: event.target.value })}
+        >
+          <option value="">Semua mata kuliah</option>
+          <OpsiMataKuliah daftar={mataKuliahSesuai} />
+        </select>
+
+        <div className="flex gap-2 sm:col-span-3 lg:col-span-1">
           <input
             className={kelasIsian}
             type="search"

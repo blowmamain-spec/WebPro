@@ -92,8 +92,8 @@ export function hapusCatatan(id) {
   return balas(null)
 }
 
-// GET /api/jelajah?mata_kuliah_id=&semester=&cari=
-// filter: { mata_kuliah_id, semester, cari } — semuanya boleh kosong
+// GET /api/jelajah?mata_kuliah_id=&semester=&kategori=&cari=
+// filter: { mata_kuliah_id, semester, kategori, cari } — semuanya boleh kosong
 export function jelajahCatatan(filter = {}) {
   if (pakaiBackend) {
     const yangTerisi = Object.entries(filter).filter(([, nilai]) => nilai)
@@ -106,6 +106,7 @@ export function jelajahCatatan(filter = {}) {
     .filter((c) => c.status === 'publik')
     .filter((c) => !filter.mata_kuliah_id || c.mata_kuliah_id === Number(filter.mata_kuliah_id))
     .filter((c) => !filter.semester || ringkasMataKuliah(c.mata_kuliah_id)?.semester === Number(filter.semester))
+    .filter((c) => !filter.kategori || cari(db.mataKuliah, c.mata_kuliah_id)?.kategori === filter.kategori)
     .filter((c) => !kataKunci || `${c.judul} ${c.isi}`.toLowerCase().includes(kataKunci))
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
   return balas(hasil.map(bentukCatatan))

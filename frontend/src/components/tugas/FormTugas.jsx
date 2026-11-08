@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import OpsiMataKuliah from '@/components/OpsiMataKuliah'
 
 const kelasIsian =
   'mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100'
@@ -60,9 +61,7 @@ function FormTugas({ tugas, daftarMataKuliah, onSimpan, onBatal }) {
           <label className={kelasLabel} htmlFor="mata_kuliah_id">Mata kuliah</label>
           <select id="mata_kuliah_id" name="mata_kuliah_id" className={kelasIsian} value={form.mata_kuliah_id} onChange={ubahIsian}>
             <option value="">Tanpa mata kuliah</option>
-            {daftarMataKuliah.map((mataKuliah) => (
-              <option key={mataKuliah.id} value={mataKuliah.id}>{mataKuliah.nama}</option>
-            ))}
+            <OpsiMataKuliah daftar={daftarMataKuliah} />
           </select>
         </div>
 
