@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CatatanController;
 use App\Http\Controllers\Api\JadwalController;
 use App\Http\Controllers\Api\MataKuliahController;
+use App\Http\Controllers\Api\TugasController;
 use Illuminate\Support\Facades\Route;
 
 // Dibatasi 10 percobaan per menit supaya password tidak bisa ditebak terus-menerus
@@ -21,5 +23,24 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('jadwal', JadwalController::class)
         ->only(['index', 'store', 'update', 'destroy'])
-        ->parameters(['jadwal' => 'id']);
+        ->parameters(['jadwal' => 'id'])
+        ->whereNumber('id');
+
+    Route::apiResource('tugas', TugasController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->parameters(['tugas' => 'id'])
+        ->whereNumber('id');
+
+    Route::apiResource('catatan', CatatanController::class)
+        ->parameters(['catatan' => 'id'])
+        ->whereNumber('id');
+
+    Route::get('/jelajah', [CatatanController::class, 'jelajah']);
+    Route::get('/tersimpan', [CatatanController::class, 'tersimpan']);
+
+    Route::whereNumber('id')->group(function () {
+        Route::post('/catatan/{id}/simpan', [CatatanController::class, 'simpan']);
+        Route::delete('/catatan/{id}/simpan', [CatatanController::class, 'batalSimpan']);
+        Route::post('/catatan/{id}/laporan', [CatatanController::class, 'laporkan']);
+    });
 });

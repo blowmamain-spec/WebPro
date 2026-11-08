@@ -1,4 +1,5 @@
 import { db, balas, gagal, idBaru, cari, ringkasMataKuliah, ringkasPengguna } from './data-palsu'
+import { request, pakaiBackend } from './client'
 
 // Mengubah baris tabel jadi bentuk yang dikirim API (relasi ikut disertakan)
 export function bentukTugas(tugas) {
@@ -9,16 +10,20 @@ export function bentukTugas(tugas) {
   }
 }
 
-// Tahap 2: GET /api/tugas
+// GET /api/tugas
 // Hanya tugas pribadi. Tugas kelompok diambil lewat kelompok.js.
 export function ambilDaftarTugas() {
+  if (pakaiBackend) return request('/tugas')
+
   const milikSaya = db.tugas.filter((t) => t.user_id === db.penggunaLogin && t.kelompok_id === null)
   return balas(milikSaya.map(bentukTugas))
 }
 
-// Tahap 2: POST /api/tugas
+// POST /api/tugas
 // data: { judul, deskripsi, mata_kuliah_id, deadline, prioritas }
 export function tambahTugas(data) {
+  if (pakaiBackend) return request('/tugas', { method: 'POST', body: data })
+
   if (!data.judul || !data.deadline) {
     return gagal(422, 'Data belum lengkap', { judul: ['Judul wajib diisi.'], deadline: ['Deadline wajib diisi.'] })
   }
@@ -37,17 +42,21 @@ export function tambahTugas(data) {
   return balas(bentukTugas(tugas))
 }
 
-// Tahap 2: PUT /api/tugas/{id}
+// PUT /api/tugas/{id}
 // data: kolom yang mau diubah saja, misal { status: 'selesai' }. Berlaku juga untuk tugas kelompok.
 export function ubahTugas(id, data) {
+  if (pakaiBackend) return request(`/tugas/${id}`, { method: 'PUT', body: data })
+
   const tugas = cari(db.tugas, id)
   if (!tugas) return gagal(404, 'Tugas tidak ditemukan')
   Object.assign(tugas, data)
   return balas(bentukTugas(tugas))
 }
 
-// Tahap 2: DELETE /api/tugas/{id}
+// DELETE /api/tugas/{id}
 export function hapusTugas(id) {
+  if (pakaiBackend) return request(`/tugas/${id}`, { method: 'DELETE' })
+
   db.tugas = db.tugas.filter((t) => t.id !== Number(id))
   return balas(null)
 }

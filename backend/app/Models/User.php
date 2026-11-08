@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -25,6 +26,21 @@ class User extends Authenticatable
     public function jadwal(): HasMany
     {
         return $this->hasMany(Jadwal::class);
+    }
+
+    public function tugas(): HasMany
+    {
+        return $this->hasMany(Tugas::class);
+    }
+
+    public function catatan(): HasMany
+    {
+        return $this->hasMany(Catatan::class);
+    }
+
+    public function catatanTersimpan(): BelongsToMany
+    {
+        return $this->belongsToMany(Catatan::class, 'catatan_tersimpan', 'user_id', 'catatan_id');
     }
 
     /**
