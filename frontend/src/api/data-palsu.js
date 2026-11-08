@@ -65,54 +65,13 @@ export const db = {
   ],
 
   // hari: 1 = Senin ... 7 = Minggu
-  // hari: 1 = Senin ... 7 = Minggu
-jadwal: [
-  {
-    id: 1,
-    user_id: 1,
-    mata_kuliah: 'Rekayasa Perangkat Lunak',
-    hari: 1,
-    jam_mulai: '07:30',
-    jam_selesai: '10:30',
-    ruangan: 'KU3.04.12',
-  },
-  {
-    id: 2,
-    user_id: 1,
-    mata_kuliah: 'Pemrograman Web',
-    hari: 2,
-    jam_mulai: '10:30',
-    jam_selesai: '13:30',
-    ruangan: 'Lab Komputer 2',
-  },
-  {
-    id: 3,
-    user_id: 1,
-    mata_kuliah: 'Keamanan Siber',
-    hari: 3,
-    jam_mulai: '13:30',
-    jam_selesai: '16:30',
-    ruangan: 'KU3.02.05',
-  },
-  {
-    id: 4,
-    user_id: 1,
-    mata_kuliah: 'Pemrograman Berorientasi Objek',
-    hari: 4,
-    jam_mulai: '07:30',
-    jam_selesai: '10:30',
-    ruangan: 'Lab Komputer 1',
-  },
-  {
-    id: 5,
-    user_id: 1,
-    mata_kuliah: 'Jaringan Nirkabel',
-    hari: 5,
-    jam_mulai: '09:30',
-    jam_selesai: '12:30',
-    ruangan: 'KU3.01.03',
-  },
-],
+  jadwal: [
+    { id: 1, user_id: 1, mata_kuliah_id: 2, hari: 1, jam_mulai: '07:30', jam_selesai: '10:30', ruangan: 'KU3.04.12' },
+    { id: 2, user_id: 1, mata_kuliah_id: 1, hari: 2, jam_mulai: '10:30', jam_selesai: '13:30', ruangan: 'Lab Komputer 2' },
+    { id: 3, user_id: 1, mata_kuliah_id: 4, hari: 3, jam_mulai: '13:30', jam_selesai: '16:30', ruangan: 'KU3.02.05' },
+    { id: 4, user_id: 1, mata_kuliah_id: 5, hari: 4, jam_mulai: '07:30', jam_selesai: '10:30', ruangan: 'Lab Komputer 1' },
+    { id: 5, user_id: 1, mata_kuliah_id: 6, hari: 5, jam_mulai: '09:30', jam_selesai: '12:30', ruangan: 'KU3.01.03' },
+  ],
 
   checklist: [
     {

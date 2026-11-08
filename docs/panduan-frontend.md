@@ -26,7 +26,9 @@ npm run dev
 
 Buka `http://localhost:5173`. Setiap file disimpan, browser langsung ikut berubah. Sebelum push, jalankan `npm run lint` untuk mengecek kesalahan umum.
 
-Akun contoh di halaman login (password bebas): `mahasiswa@contoh.ac.id` dan `admin@contoh.ac.id`. Panel admin juga bisa langsung dibuka di `/admin`.
+Akun contoh di halaman login (password bebas selama memakai data palsu): `mahasiswa@contoh.ac.id` dan `admin@contoh.ac.id`. Panel admin juga bisa langsung dibuka di `/admin`.
+
+Backend tidak perlu dijalankan selama `VITE_API_URL` di `frontend/.env` kosong. Kalau file `.env`-mu masih berisi `http://localhost:8000` dan muncul pesan "Backend tidak bisa dihubungi", kosongkan isinya lalu jalankan ulang `npm run dev`.
 
 ## 3. Isi satu file halaman
 
@@ -145,8 +147,10 @@ const { data: daftarTugas, memuat, error, setData } = useMuatData(() => ambilDaf
 
 Halaman **tidak pernah** menulis data sendiri dan tidak memanggil `fetch` langsung. Semua lewat fungsi di `src/api/`.
 
-- **Tahap 1 (sekarang):** fungsi di `src/api/` membaca data palsu dari `src/api/data-palsu.js`. Tambah/ubah/hapus juga jalan, tapi kembali seperti semula setelah refresh.
-- **Tahap 2 (setelah backend jadi):** isi fungsi di `src/api/` diganti memanggil Laravel lewat `client.js`. Nama fungsinya sama, jadi **halamanmu tidak perlu diubah**.
+- **Data palsu (`VITE_API_URL` kosong):** fungsi di `src/api/` membaca `src/api/data-palsu.js`. Tambah/ubah/hapus juga jalan, tapi kembali seperti semula setelah refresh.
+- **Backend (`VITE_API_URL` diisi):** fungsi yang sudah punya backend memanggil Laravel lewat `client.js`, dan datanya tersimpan di database. Nama fungsinya sama, jadi **halamanmu tidak perlu diubah**.
+
+Yang sudah tersambung ke backend: `auth.js`, `jadwal.js`, dan `ambilDaftarMataKuliah()`. Contoh polanya ada di `src/api/jadwal.js`.
 
 Fungsi apa saja yang tersedia untuk halamanmu ditulis di komentar bagian atas file halaman. Daftar lengkapnya ada di `docs/kontrak-data.md`.
 

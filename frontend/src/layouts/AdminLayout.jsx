@@ -1,5 +1,6 @@
-import { Link, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import SidebarMenu from '@/components/SidebarMenu'
+import LinkKeluar from '@/components/LinkKeluar'
 
 const menu = [
   {
@@ -17,7 +18,7 @@ function AdminLayout() {
   return (
     <div className="layout layout-admin">
       <SidebarMenu judul="Panel Admin" menu={menu}>
-        <Link to="/login" className="sidebar-link">Keluar</Link>
+        <LinkKeluar />
       </SidebarMenu>
 
       <main className="konten">

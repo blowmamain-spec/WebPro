@@ -65,9 +65,11 @@ Dokumen wajib baca:
 ### 1. Install prasyarat
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- PHP ≥ 8.2 + Composer — disarankan install lewat [Laragon](https://laragon.org/) kalau di Windows
+- PHP ≥ 8.3 + Composer (XAMPP dengan PHP 8.2 belum cukup) — disarankan install lewat [Laragon](https://laragon.org/) kalau di Windows
 - Node.js ≥ 20.19
 - Git (CLI atau [GitHub Desktop](https://desktop.github.com/) buat yang belum terbiasa terminal)
+
+Kalau memakai WSL, clone repo di dalam home WSL (misal `~/WebPro`), jangan di `/mnt/c` atau `/mnt/e`. Dari drive Windows, backend jauh lebih lambat dan bisa kena error `Permission denied`.
 
 ### 2. Clone repo
 
@@ -95,11 +97,11 @@ cd backend
 cp .env.example .env
 composer install
 php artisan key:generate
-php artisan migrate
+php artisan migrate --seed
 php artisan serve
 ```
 
-Backend jalan di `http://localhost:8000`.
+Backend jalan di `http://localhost:8000`. `--seed` mengisi daftar mata kuliah dan dua akun contoh (`mahasiswa@contoh.ac.id` dan `admin@contoh.ac.id`, password ada di `database/seeders/DatabaseSeeder.php`).
 
 ### 5. Setup frontend
 
@@ -112,13 +114,20 @@ npm install
 npm run dev
 ```
 
-Frontend jalan di `http://localhost:5173`. Selama tahap 1, frontend sudah bisa dipakai tanpa backend (memakai data palsu).
+Frontend jalan di `http://localhost:5173`.
+
+Isi `VITE_API_URL` di `frontend/.env` menentukan sumber datanya:
+
+- **Kosong** (bawaan): semua fitur memakai data palsu, backend tidak perlu dijalankan.
+- **`http://localhost:8000`**: Login, Daftar, Profil, daftar Mata Kuliah, dan Jadwal memakai backend Laravel. Fitur lain masih memakai data palsu sampai backend-nya dibuat.
+
+Setelah mengubah file `.env`, jalankan ulang `npm run dev`.
 
 ## Deploy Frontend ke Vercel
 
 1. Login ke [Vercel](https://vercel.com) pakai akun GitHub, lalu **Add New → Project** dan pilih repo ini.
 2. Isi **Root Directory** dengan `frontend`. Framework terdeteksi otomatis sebagai Vite.
-3. Di **Environment Variables**, isi `VITE_API_URL` dengan alamat backend (boleh dikosongkan selama tahap 1).
+3. Di **Environment Variables**, isi `VITE_API_URL` dengan alamat backend online. Selama backend belum online, kosongkan saja supaya situsnya tetap jalan dengan data palsu.
 4. Klik **Deploy**. Setelah itu setiap push ke `main` otomatis di-deploy, dan setiap Pull Request dapat link preview sendiri.
 
 File `frontend/vercel.json` membuat semua alamat (misal `/tugas`) diarahkan ke `index.html`, supaya halaman tidak 404 waktu di-refresh.
