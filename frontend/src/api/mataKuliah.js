@@ -1,7 +1,10 @@
 import { db, balas, gagal, idBaru, cari } from './data-palsu'
+import { request, pakaiBackend } from './client'
 
-// Tahap 2: GET /api/mata-kuliah
+// GET /api/mata-kuliah
 export function ambilDaftarMataKuliah() {
+  if (pakaiBackend) return request('/mata-kuliah')
+
   const urut = [...db.mataKuliah].sort((a, b) => a.semester - b.semester || a.nama.localeCompare(b.nama))
   return balas(urut)
 }

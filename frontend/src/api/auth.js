@@ -1,10 +1,13 @@
 import { db, balas, gagal, idBaru, cari } from './data-palsu'
+import { request, pakaiBackend } from './client'
 
-// Tahap 1: password apa pun diterima, yang dicek cuma email-nya.
+// Tanpa backend: password apa pun diterima, yang dicek cuma email-nya.
 // Akun contoh: mahasiswa@contoh.ac.id (mahasiswa), admin@contoh.ac.id (admin).
 
-// Tahap 2: POST /api/login
+// POST /api/login
 export function masuk(email, password) {
+  if (pakaiBackend) return request('/login', { method: 'POST', body: { email, password } })
+
   const user = db.users.find((u) => u.email === email)
   if (!user || !password) {
     return gagal(422, 'Email atau password salah', { email: ['Email atau password salah.'] })
@@ -13,13 +16,15 @@ export function masuk(email, password) {
   return balas({ token: 'token-palsu', user })
 }
 
-// Tahap 2: POST /api/register
+// POST /api/register
 // data: { name, nim, email, password, semester }
 export function daftar(data) {
+  if (pakaiBackend) return request('/register', { method: 'POST', body: data })
+
   if (db.users.some((u) => u.email === data.email)) {
     return gagal(422, 'Email sudah dipakai', { email: ['Email sudah dipakai.'] })
   }
-  // Password tidak ikut disimpan/dikirim balik, sama seperti backend nanti
+  // Password tidak ikut disimpan/dikirim balik, sama seperti backend
   const user = {
     id: idBaru(db.users),
     name: data.name,
@@ -33,22 +38,28 @@ export function daftar(data) {
   return balas({ token: 'token-palsu', user })
 }
 
-// Tahap 2: POST /api/logout
+// POST /api/logout
 export function keluar() {
+  if (pakaiBackend) return request('/logout', { method: 'POST' })
+
   db.penggunaLogin = null
   return balas(null)
 }
 
-// Tahap 2: GET /api/user
+// GET /api/user
 export function ambilProfil() {
+  if (pakaiBackend) return request('/user')
+
   const user = cari(db.users, db.penggunaLogin)
   if (!user) return gagal(401, 'Belum login')
   return balas(user)
 }
 
-// Tahap 2: PUT /api/user
+// PUT /api/user
 // data: kolom yang mau diubah, misal { name, semester }
 export function ubahProfil(data) {
+  if (pakaiBackend) return request('/user', { method: 'PUT', body: data })
+
   const user = cari(db.users, db.penggunaLogin)
   if (!user) return gagal(401, 'Belum login')
   Object.assign(user, data)

@@ -11,7 +11,7 @@ import { ambilDaftarMataKuliah } from '@/api/mataKuliah'
 import { namaHari } from '@/utils/format'
 
 function JadwalPage() {
-  const { data: daftarJadwal, memuat, setData } = useMuatData(
+  const { data: daftarJadwal, memuat, error, setData } = useMuatData(
     () => ambilJadwal(),
     []
   )
@@ -21,10 +21,9 @@ function JadwalPage() {
   const [formTerbuka, setFormTerbuka] = useState(false)
   const [mode, setMode] = useState('tambah')
   const [editId, setEditId] = useState(null)
-  const [insertSetelah, setInsertSetelah] = useState(null)
 
   const [form, setForm] = useState({
-    mata_kuliah: '',
+    mata_kuliah_id: '',
     jam_mulai: '',
     jam_selesai: '',
     ruangan: ''
@@ -61,7 +60,7 @@ function JadwalPage() {
 
   function resetForm() {
     setForm({
-      mata_kuliah: '',
+      mata_kuliah_id: '',
       jam_mulai: '',
       jam_selesai: '',
       ruangan: ''
@@ -73,16 +72,6 @@ function JadwalPage() {
     resetForm()
     setMode('tambah')
     setEditId(null)
-    setInsertSetelah(null)
-    setFormTerbuka(true)
-  }
-
-  // Tombol + untuk menambah jadwal setelah jadwal tertentu
-  function bukaTambahDiBawah(index) {
-    resetForm()
-    setMode('tambah')
-    setEditId(null)
-    setInsertSetelah(index)
     setFormTerbuka(true)
   }
 
@@ -92,7 +81,7 @@ function JadwalPage() {
     setEditId(jadwal.id)
 
     setForm({
-      mata_kuliah: jadwal.mata_kuliah,
+      mata_kuliah_id: jadwal.mata_kuliah_id,
       jam_mulai: jadwal.jam_mulai,
       jam_selesai: jadwal.jam_selesai,
       ruangan: jadwal.ruangan || ''
@@ -117,7 +106,7 @@ function JadwalPage() {
       )
     } catch (error) {
       console.error('ERROR HAPUS JADWAL:', error)
-      alert('Jadwal gagal dihapus.')
+      alert(error.message || 'Jadwal gagal dihapus.')
     }
   }
 
@@ -126,7 +115,7 @@ function JadwalPage() {
   event.preventDefault()
 
   const data = {
-    mata_kuliah: form.mata_kuliah,
+    mata_kuliah_id: Number(form.mata_kuliah_id),
     hari: Number(hariAktif),
     jam_mulai: form.jam_mulai,
     jam_selesai: form.jam_selesai,
@@ -155,7 +144,7 @@ function JadwalPage() {
     resetForm()
   } catch (error) {
     console.error('ERROR SIMPAN JADWAL:', error)
-    alert('Data gagal disimpan. Pastikan semua data sudah diisi.')
+    alert(error.message || 'Data gagal disimpan. Pastikan semua data sudah diisi.')
   }
 }
   return (
@@ -202,16 +191,18 @@ function JadwalPage() {
 
           {memuat ? (
             <p className="teks-redup">Memuat...</p>
+          ) : error ? (
+            <p className="pesan-error">{error.message}</p>
           ) : jadwalHariIni.length === 0 ? (
             <div className="jadwal-kosong">
               Belum ada jadwal untuk hari {namaHari(hariAktif)}.
             </div>
           ) : (
-            jadwalHariIni.map((jadwal, index) => (
+            jadwalHariIni.map((jadwal) => (
               <div className="jadwal-row" key={jadwal.id}>
 
                 <div>
-                  {jadwal.mata_kuliah || 'Mata Kuliah'}
+                  {jadwal.mata_kuliah?.nama ?? 'Mata Kuliah'}
                 </div>
 
                 <div>
@@ -225,7 +216,7 @@ function JadwalPage() {
                   <button
                     type="button"
                     className="jadwal-action-btn add-btn"
-                    onClick={() => bukaTambahDiBawah(index)}
+                    onClick={bukaTambah}
                     title="Tambah jadwal"
                   >
                     +
@@ -268,18 +259,23 @@ function JadwalPage() {
             <form onSubmit={handleSubmit}>
 
               <label>Mata Kuliah</label>
-              <input
-                type="text"
-                placeholder="Masukkan nama mata kuliah"
-                value={form.mata_kuliah}
+              <select
+                value={form.mata_kuliah_id}
                 onChange={(event) =>
                   setForm({
                     ...form,
-                    mata_kuliah: event.target.value
+                    mata_kuliah_id: event.target.value
                   })
                 }
                 required
-              />
+              >
+                <option value="" disabled>Pilih mata kuliah</option>
+                {daftarMataKuliah.map((mataKuliah) => (
+                  <option key={mataKuliah.id} value={mataKuliah.id}>
+                    {mataKuliah.nama}
+                  </option>
+                ))}
+              </select>
 
               <label>Jam Mulai</label>
               <input

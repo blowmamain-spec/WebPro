@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { masuk } from '@/api/auth'
+import { pakaiBackend } from '@/api/client'
 
 function LoginPage() {
   const navigate = useNavigate()
@@ -47,9 +48,11 @@ function LoginPage() {
         <p className="teks-redup">
           Belum punya akun? <Link to="/register">Daftar</Link>
         </p>
-        <p className="teks-redup">
-          Akun contoh (tahap 1, password bebas): mahasiswa@contoh.ac.id atau admin@contoh.ac.id
-        </p>
+        {!pakaiBackend && (
+          <p className="teks-redup">
+            Akun contoh (data palsu, password bebas): mahasiswa@contoh.ac.id atau admin@contoh.ac.id
+          </p>
+        )}
       </form>
     </div>
   )
